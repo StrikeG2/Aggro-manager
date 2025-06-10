@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Gestion Agricole{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4 text-success">
+                <i class="bi bi-tree-fill"></i> Bienvenue sur AgroManager
+            </h1>
+            <p class="lead mb-5">
+                Votre solution complète pour la gestion de votre exploitation agricole
+            </p>
+            
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg px-4 gap-3 btn-hover-grow">
+                    <i class="bi bi-box-arrow-in-right"></i> Connexion
+                </a>
+                <a href="{{ path('app_register') }}" class="btn btn-outline-success btn-lg px-4 btn-hover-grow">
+                    <i class="bi bi-person-plus"></i> Inscription
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-basket text-success" style="font-size: 2.5rem;"></i>
+                    <h3 class="card-title mt-3">Gestion des produits</h3>
+                    <p class="card-text">Suivez vos stocks agricoles en temps réel</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-graph-up text-success" style="font-size: 2.5rem;"></i>
+                    <h3 class="card-title mt-3">Statistiques</h3>
+                    <p class="card-text">Analysez vos performances et tendances</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-check text-success" style="font-size: 2.5rem;"></i>
+                    <h3 class="card-title mt-3">Suivi des mouvements</h3>
+                    <p class="card-text">Historique complet des entrées/sorties</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
