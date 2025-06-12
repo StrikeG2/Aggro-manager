@@ -34,8 +34,11 @@ final class MouvementProduitController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Mise à jour du stock
+            // Récupérer le prix unitaire du produit associé
             $produit = $mouvementProduit->getProduit();
+            $mouvementProduit->setPrixUnitaire($produit->getPrixUnitaire());
+            
+            // Mise à jour du stock
             if ($mouvementProduit->getType() === 'entree') {
                 $produit->setStock($produit->getStock() + $mouvementProduit->getQuantite());
             } else {
@@ -50,9 +53,10 @@ final class MouvementProduitController extends AbstractController
 
         return $this->render('mouvement_produit/new.html.twig', [
             'mouvement_produit' => $mouvementProduit,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
+
     #[Route('/{id}', name: 'app_mouvement_produit_show', methods: ['GET'])]
     public function show(MouvementProduit $mouvementProduit): Response
     {
@@ -64,10 +68,13 @@ final class MouvementProduitController extends AbstractController
     #[Route('/{id}/edit', name: 'app_mouvement_produit_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, MouvementProduit $mouvementProduit, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(MouvementProduitForm::class, $mouvementProduit);
+        $form = $this->createForm(MouvementProduitForm::class, $mouvementProduit, [
+            'user' => $this->getUser()
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Pour l'édition, conservez le prix unitaire existant
             $entityManager->flush();
 
             return $this->redirectToRoute('app_mouvement_produit_index', [], Response::HTTP_SEE_OTHER);
@@ -75,7 +82,7 @@ final class MouvementProduitController extends AbstractController
 
         return $this->render('mouvement_produit/edit.html.twig', [
             'mouvement_produit' => $mouvementProduit,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 

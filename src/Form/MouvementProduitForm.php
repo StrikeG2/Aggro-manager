@@ -37,9 +37,6 @@ class MouvementProduitForm extends AbstractType
             ->add('quantite', NumberType::class, [
                 'label' => 'Quantité'
             ])
-            ->add('prixUnitaire', NumberType::class, [
-                'label' => 'Prix unitaire (FCFA)'
-            ])
             ->add('date', DateTimeType::class, [
                 'label' => 'Date et heure',
                 'widget' => 'single_text',

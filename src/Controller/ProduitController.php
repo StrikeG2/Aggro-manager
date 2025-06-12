@@ -18,6 +18,7 @@ final class ProduitController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $produit = new Produit();
+        // Définir les valeurs automatiques
         $produit->setUserR($this->getUser());
         $produit->setCreatedAt(new \DateTimeImmutable());
         $produit->setUpdatedAt(new \DateTimeImmutable());
@@ -34,10 +35,10 @@ final class ProduitController extends AbstractController
 
         return $this->render('produit/new.html.twig', [
             'produit' => $produit,
-            'form' => $form,
+            'form' => $form->createView(), // Ajout de createView()
         ]);
     }
-
+    
     #[Route('/', name: 'app_produit_index', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -60,10 +61,15 @@ final class ProduitController extends AbstractController
     #[Route('/{id}/edit', name: 'app_produit_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Produit $produit, EntityManagerInterface $entityManager): Response
     {
+        // Mettre à jour seulement updatedAt
+        $produit->setUpdatedAt(new \DateTimeImmutable());
+        
         $form = $this->createForm(ProduitForm::class, $produit);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Mise à jour supplémentaire de updatedAt si nécessaire
+            $produit->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->flush();
 
             return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
@@ -71,10 +77,10 @@ final class ProduitController extends AbstractController
 
         return $this->render('produit/edit.html.twig', [
             'produit' => $produit,
-            'form' => $form,
+            'form' => $form->createView(), // Ajout de createView()
         ]);
     }
-
+    
     #[Route('/{id}', name: 'app_produit_delete', methods: ['POST'])]
     public function delete(Request $request, Produit $produit, EntityManagerInterface $entityManager): Response
     {

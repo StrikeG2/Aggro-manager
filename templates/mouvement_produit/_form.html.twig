@@ -22,15 +22,12 @@
             }) }}
         </div>
         <div class="col-md-4">
-            {{ form_row(form.prixUnitaire, {
-                attr: { class: 'form-control', min: 0 },
-                label: 'Prix unitaire (FCFA)',
-                label_attr: { class: 'form-label fw-medium' }
-            }) }}
-        </div>
-        <div class="col-md-4">
             {{ form_row(form.date, {
-                attr: { class: 'form-control datetimepicker' },
+                attr: { 
+                    class: 'form-control datetimepicker-input',
+                    'data-toggle': 'datetimepicker',
+                    'data-target': '#mouvement_produit_form_date' 
+                },
                 label: 'Date et heure',
                 label_attr: { class: 'form-label fw-medium' }
             }) }}
@@ -51,3 +48,23 @@
         </button>
     </div>
 {{ form_end(form) }}
+
+{# Ajoutez ces scripts pour le datetimepicker #}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<script>
+$(function () {
+    $('#mouvement_produit_form_date').datetimepicker({
+        format: 'YYYY-MM-DD HH:mm',
+        sideBySide: true,
+        buttons: {
+            showToday: true,
+            showClose: true
+        },
+        locale: 'fr'
+    });
+});
+</script>

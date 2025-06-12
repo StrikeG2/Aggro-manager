@@ -18,12 +18,7 @@ class ProduitForm extends AbstractType
             ->add('description')
             ->add('prixUnitaire')
             ->add('stock')
-            ->add('createdAt')
-            ->add('updatedAt')
-            ->add('userR', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
+
         ;
     }
 
