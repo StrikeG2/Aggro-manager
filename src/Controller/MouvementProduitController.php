@@ -28,7 +28,7 @@ final class MouvementProduitController extends AbstractController
         $mouvementProduit = new MouvementProduit();
         $mouvementProduit->setDate(new \DateTimeImmutable());
         
-        $form = $this->createForm(MouvementProduitType::class, $mouvementProduit, [
+        $form = $this->createForm(MouvementProduitForm::class, $mouvementProduit, [
             'user' => $this->getUser()
         ]);
         $form->handleRequest($request);

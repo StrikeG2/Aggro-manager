@@ -1,4 +1,53 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="row g-3">
+        <div class="col-md-6">
+            {{ form_row(form.produit, {
+                attr: { class: 'form-select' },
+                label: 'Produit',
+                label_attr: { class: 'form-label fw-medium' }
+            }) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.type, {
+                attr: { class: 'form-select' },
+                label: 'Type de mouvement',
+                label_attr: { class: 'form-label fw-medium' }
+            }) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.quantite, {
+                attr: { class: 'form-control', min: 1 },
+                label: 'Quantité',
+                label_attr: { class: 'form-label fw-medium' }
+            }) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.prixUnitaire, {
+                attr: { class: 'form-control', min: 0 },
+                label: 'Prix unitaire (FCFA)',
+                label_attr: { class: 'form-label fw-medium' }
+            }) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.date, {
+                attr: { class: 'form-control datetimepicker' },
+                label: 'Date et heure',
+                label_attr: { class: 'form-label fw-medium' }
+            }) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.motif, {
+                attr: { class: 'form-control', rows: 3 },
+                label: 'Motif',
+                label_attr: { class: 'form-label fw-medium' }
+            }) }}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-success btn-hover-grow">
+            <i class="bi bi-check-circle me-2"></i>
+            {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
 {{ form_end(form) }}

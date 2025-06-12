@@ -1,43 +1,75 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}MouvementProduit index{% endblock %}
+{% block title %}Gestion des Mouvements de Produits{% endblock %}
 
 {% block body %}
-    <h1>MouvementProduit index</h1>
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-success">
+            <i class="bi bi-arrow-left-right me-2"></i>
+            Mouvements de Produits
+        </h1>
+        <a href="{{ path('app_mouvement_produit_new') }}" class="btn btn-success btn-hover-grow">
+            <i class="bi bi-plus-circle me-2"></i> Nouveau Mouvement
+        </a>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Quantite</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>PrixUnitaire</th>
-                <th>Motif</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for mouvement_produit in mouvement_produits %}
-            <tr>
-                <td>{{ mouvement_produit.id }}</td>
-                <td>{{ mouvement_produit.quantite }}</td>
-                <td>{{ mouvement_produit.type }}</td>
-                <td>{{ mouvement_produit.date ? mouvement_produit.date|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ mouvement_produit.prixUnitaire }}</td>
-                <td>{{ mouvement_produit.motif }}</td>
-                <td>
-                    <a href="{{ path('app_mouvement_produit_show', {'id': mouvement_produit.id}) }}">show</a>
-                    <a href="{{ path('app_mouvement_produit_edit', {'id': mouvement_produit.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_mouvement_produit_new') }}">Create new</a>
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <i class="bi bi-list-ul me-2"></i>Historique des mouvements
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-success">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Quantité</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Prix Unitaire</th>
+                            <th>Motif</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mouvement_produit in mouvement_produits %}
+                        <tr>
+                            <td class="ps-4 fw-medium">{{ mouvement_produit.id }}</td>
+                            <td>
+                                <span class="badge {% if mouvement_produit.type == 'entree' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ mouvement_produit.quantite }}
+                                </span>
+                            </td>
+                            <td>{{ mouvement_produit.type|capitalize }}</td>
+                            <td>{{ mouvement_produit.date ? mouvement_produit.date|date('d/m/Y H:i') : '' }}</td>
+                            <td>{{ mouvement_produit.prixUnitaire|number_format(0, ',', ' ') }} FCFA</td>
+                            <td>{{ mouvement_produit.motif|default('N/A') }}</td>
+                            <td class="text-end pe-4">
+                                <a href="{{ path('app_mouvement_produit_show', {'id': mouvement_produit.id}) }}" 
+                                   class="btn btn-sm btn-outline-primary btn-hover-grow me-2"
+                                   title="Voir détails">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ path('app_mouvement_produit_edit', {'id': mouvement_produit.id}) }}" 
+                                   class="btn btn-sm btn-outline-warning btn-hover-grow"
+                                   title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="bi bi-exclamation-circle me-2"></i>
+                                Aucun mouvement enregistré
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

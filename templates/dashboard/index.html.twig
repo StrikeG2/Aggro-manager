@@ -1,47 +1,265 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tableau de Bord{% endblock %}
+{% block title %}Tableau de bord{% endblock %}
 
 {% block body %}
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200">
-                <h2 class="text-2xl font-bold text-green-700 mb-6">Tableau de Bord</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Carte Statistiques -->
-                    <a href="{{ path('app_statistiques') }}" 
-                       class="bg-green-50 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
-                        <div class="flex items-center">
-                            <i class="fas fa-chart-bar text-green-600 text-2xl mr-3"></i>
-                            <h3 class="text-lg font-semibold">Statistiques</h3>
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-success">
+            <i class="bi bi-speedometer2 me-2"></i> Tableau de bord
+        </h1>
+        <div>
+            <a href="{{ path('app_mouvement_produit_new') }}" class="btn btn-success btn-hover-grow me-2">
+                <i class="bi bi-plus-circle me-2"></i> Nouveau mouvement
+            </a>
+            <a href="{{ path('app_mouvement_produit_index') }}" class="btn btn-outline-success btn-hover-grow">
+                <i class="bi bi-clock-history me-2"></i> Voir tous
+            </a>
+        </div>
+    </div>
+    
+    <!-- Cartes de statistiques -->
+    <div class="row mb-4">
+        <!-- Produits en stock -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card border-success shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Produits en stock</h6>
+                            <h3 class="mb-0">{{ produits_count }}</h3>
+                            <small class="text-success">
+                                {% if produits_count_precedent == 0 %}
+                                    Nouveau (pas de comparaison possible)
+                                {% else %}
+                                    {% if produits_count > produits_count_precedent %}
+                                        <i class="bi bi-arrow-up"></i> {{ ((produits_count - produits_count_precedent)/produits_count_precedent*100)|number_format(1) }}%
+                                    {% else %}
+                                        <i class="bi bi-arrow-down"></i> {{ ((produits_count_precedent - produits_count)/produits_count_precedent*100)|number_format(1) }}%
+                                    {% endif %}
+                                    vs mois dernier
+                                {% endif %}
+                            </small>
                         </div>
-                        <p class="mt-2 text-gray-600">Voir les analyses de vos activités</p>
-                    </a>
-
-                    <!-- Carte Produits -->
-                    <a href="{{ path('app_produit_index') }}" 
-                       class="bg-green-50 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
-                        <div class="flex items-center">
-                            <i class="fas fa-seedling text-green-600 text-2xl mr-3"></i>
-                            <h3 class="text-lg font-semibold">Produits</h3>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-box-seam text-success" style="font-size: 1.8rem;"></i>
                         </div>
-                        <p class="mt-2 text-gray-600">Gérer vos produits agricoles</p>
-                    </a>
-
-                    <!-- Carte Transactions -->
-                    <a href="{{ path('app_mouvement_produit_index') }}" 
-                       class="bg-green-50 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
-                        <div class="flex items-center">
-                            <i class="fas fa-exchange-alt text-green-600 text-2xl mr-3"></i>
-                            <h3 class="text-lg font-semibold">Transactions</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Valeur du stock -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card border-success shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Valeur du stock</h6>
+                            <h3 class="mb-0">{{ valeur_stock|number_format(0, ',', ' ') }} XAF</h3>
+                            <small class="text-success">
+                                {% if valeur_stock_precedent == 0 %}
+                                    Nouveau (pas de comparaison possible)
+                                {% else %}
+                                    {% if valeur_stock > valeur_stock_precedent %}
+                                        <i class="bi bi-arrow-up"></i> {{ ((valeur_stock - valeur_stock_precedent)/valeur_stock_precedent*100)|number_format(1) }}%
+                                    {% else %}
+                                        <i class="bi bi-arrow-down"></i> {{ ((valeur_stock_precedent - valeur_stock)/valeur_stock_precedent*100)|number_format(1) }}%
+                                    {% endif %}
+                                    vs mois dernier
+                                {% endif %}
+                            </small>
                         </div>
-                        <p class="mt-2 text-gray-600">Enregistrer et consulter les mouvements</p>
-                    </a>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-cash-stack text-success" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mouvements ce mois -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card border-success shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Mouvements ce mois</h6>
+                            <h3 class="mb-0">{{ mouvements_mois_count }}</h3>
+                            <small class="text-success">
+                                {% if mouvements_mois_precedent == 0 %}
+                                    Nouveau (pas de comparaison possible)
+                                {% else %}
+                                    {% if mouvements_mois_count > mouvements_mois_precedent %}
+                                        <i class="bi bi-arrow-up"></i> {{ ((mouvements_mois_count - mouvements_mois_precedent)/mouvements_mois_precedent*100)|number_format(1) }}%
+                                    {% else %}
+                                        <i class="bi bi-arrow-down"></i> {{ ((mouvements_mois_precedent - mouvements_mois_count)/mouvements_mois_precedent*100)|number_format(1) }}%
+                                    {% endif %}
+                                    vs mois dernier
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-arrow-left-right text-success" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Produits faible stock -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card border-warning shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Faibles stocks</h6>
+                            <h3 class="mb-0">{{ produits_faible_stock_count }}</h3>
+                            <small class="text-warning">
+                                <i class="bi bi-exclamation-triangle"></i> À réapprovisionner
+                            </small>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+    <!-- Graphiques et tableaux -->
+    <div class="row">
+        <!-- Graphique des mouvements -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-bar-chart me-2"></i> Activité des 30 derniers jours
+                </div>
+                <div class="card-body">
+                    <canvas id="mouvementsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top produits -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-trophy me-2"></i> Top 5 des produits
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for produit in top_produits %}
+                        <div class="list-group-item border-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-medium">{{ produit.nom }}</span>
+                                <span class="badge bg-success rounded-pill">{{ produit.totalMouvements }} mouvements</span>
+                            </div>
+                            <small class="text-muted">{{ produit.quantiteStock }} unités en stock</small>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Derniers mouvements -->
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <div>
+                <i class="bi bi-clock-history me-2"></i> Derniers mouvements
+            </div>
+            <a href="{{ path('app_mouvement_produit_index') }}" class="btn btn-sm btn-outline-light btn-hover-grow">
+                Voir tout <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-success">
+                        <tr>
+                            <th class="ps-4">Date</th>
+                            <th>Produit</th>
+                            <th>Type</th>
+                            <th>Quantité</th>
+                            <th class="pe-4">Valeur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mouvement in mouvements_recent %}
+                        <tr class="align-middle">
+                            <td class="ps-4">{{ mouvement.date|date('d/m/Y H:i') }}</td>
+                            <td>
+                                <a href="{{ path('app_produit_show', {'id': mouvement.produit.id}) }}" class="text-decoration-none">
+                                    {{ mouvement.produit.nom }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if mouvement.type == 'entree' %}
+                                    <span class="badge bg-success">Entrée</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Sortie</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ mouvement.quantite }}</td>
+                            <td class="pe-4">{{ (mouvement.quantite * mouvement.prixUnitaire)|number_format(0, ',', ' ') }} XAF</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Script pour le graphique -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('mouvementsChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ dates_30_jours|json_encode|raw }},
+            datasets: [
+                {
+                    label: 'Entrées',
+                    data: {{ entrees_data|json_encode|raw }},
+                    backgroundColor: '#2e7d32',
+                    borderColor: '#2e7d32',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Sorties',
+                    data: {{ sorties_data|json_encode|raw }},
+                    backgroundColor: '#dc3545',
+                    borderColor: '#dc3545',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw + ' mouvements';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

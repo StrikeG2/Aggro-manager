@@ -15,43 +15,53 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-success text-white">
-            <i class="bi bi-info-circle me-2"></i>Informations
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-info-circle me-2"></i>Informations générales
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">Nom</th>
+                                <td>{{ produit.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>{{ produit.description|default('Aucune description') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Prix Unitaire</th>
+                                <td>{{ produit.prixUnitaire|number_format(0, ',', ' ') }} FCFA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table table-hover">
-                <tbody>
-                    <tr>
-                        <th class="w-25">Nom</th>
-                        <td>{{ produit.nom }}</td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>{{ produit.description|default('Aucune description') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Prix Unitaire</th>
-                        <td>{{ produit.prixUnitaire|format_currency('XOF') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Stock</th>
-                        <td>
-                            <span class="badge {% if produit.stock > 10 %}bg-success{% else %}bg-warning text-dark{% endif %}">
-                                {{ produit.stock }} unité(s)
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Créé le</th>
-                        <td>{{ produit.createdAt|date('d/m/Y H:i') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Mis à jour le</th>
-                        <td>{{ produit.updatedAt|date('d/m/Y H:i') }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-box-seam me-2"></i>Statut du stock
+                </div>
+                <div class="card-body text-center py-4">
+                    <div class="display-4 mb-3 {% if produit.stock > 10 %}text-success{% else %}text-warning{% endif %}">
+                        {{ produit.stock }}
+                    </div>
+                    <span class="badge {% if produit.stock > 10 %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                        unité(s) disponible(s)
+                    </span>
+                </div>
+                <div class="card-footer bg-light">
+                    <small class="text-muted">
+                        <i class="bi bi-clock-history me-1"></i>
+                        Mis à jour le {{ produit.updatedAt|date('d/m/Y à H:i') }}
+                    </small>
+                </div>
+            </div>
         </div>
     </div>
 

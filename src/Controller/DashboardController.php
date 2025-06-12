@@ -16,43 +16,38 @@ final class DashboardController extends AbstractController
     public function index(EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
+        $produitRepo = $entityManager->getRepository(Produit::class);
+        $mouvementRepo = $entityManager->getRepository(MouvementProduit::class);
+
+        // Statistiques de base - MODIFIÉ: utiliser userR au lieu de user
+        $produitsCount = $produitRepo->count(['userR' => $user]);
+        $produitsCountPrecedent = $produitRepo->countPreviousMonth($user);
         
-        // Statistiques de base
-        $produitsCount = $entityManager->getRepository(Produit::class)
-            ->count(['userR' => $user]);
+        // Valeur du stock
+        $valeurStock = $produitRepo->getValeurStock($user);
+        $valeurStockPrecedent = $produitRepo->getValeurStockPreviousMonth($user);
         
-        // Deux options pour les mouvements récents :
+        // Mouvements
+        $mouvementsRecent = $mouvementRepo->findRecentByUser($user, 10);
+        $mouvementsMoisCount = $mouvementRepo->countThisMonth($user);
+        $mouvementsMoisPrecedent = $mouvementRepo->countPreviousMonth($user);
         
-        // Option 1: Utilisez la méthode du repository
-        $mouvementsRecent = $entityManager->getRepository(MouvementProduit::class)
-            ->findRecentByUser($user);
-        
-        // OU Option 2: Gardez la query directement dans le controller
-        /*
-        $mouvementsRecent = $entityManager->getRepository(MouvementProduit::class)
-            ->createQueryBuilder('m')
-            ->join('m.produit', 'p')
-            ->where('p.userR = :user')
-            ->setParameter('user', $user)
-            ->orderBy('m.date', 'DESC')
-            ->setMaxResults(5)
-            ->getQuery()
-            ->getResult();
-        */
-        
-        // Valeur totale du stock
-        $valeurStock = $entityManager->getRepository(Produit::class)
-            ->createQueryBuilder('p')
-            ->select('SUM(p.prixUnitaire * p.stock)')
-            ->where('p.userR = :user')
-            ->setParameter('user', $user)
-            ->getQuery()
-            ->getSingleScalarResult();
+        // Statistiques 30 jours
+        $stats30Jours = $mouvementRepo->getLast30DaysStats($user);
         
         return $this->render('dashboard/index.html.twig', [
             'produits_count' => $produitsCount,
+            'produits_count_precedent' => $produitsCountPrecedent,
+            'valeur_stock' => $valeurStock,
+            'valeur_stock_precedent' => $valeurStockPrecedent,
+            'mouvements_mois_count' => $mouvementsMoisCount,
+            'mouvements_mois_precedent' => $mouvementsMoisPrecedent,
+            'produits_faible_stock_count' => $produitRepo->countLowStock($user),
             'mouvements_recent' => $mouvementsRecent,
-            'valeur_stock' => $valeurStock
+            'top_produits' => $produitRepo->findTopMoved($user),
+            'dates_30_jours' => $stats30Jours['dates'],
+            'entrees_data' => $stats30Jours['entrees'],
+            'sorties_data' => $stats30Jours['sorties']
         ]);
     }
 }

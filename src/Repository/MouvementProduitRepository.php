@@ -28,6 +28,97 @@ class MouvementProduitRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countThisMonth(User $user): int
+    {
+        $startDate = new \DateTime('first day of this month');
+        $endDate = new \DateTime('last day of this month');
+
+        return $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->join('m.produit', 'p')
+            ->where('p.userR = :user')
+            ->andWhere('m.date BETWEEN :start AND :end')
+            ->setParameter('user', $user)
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countPreviousMonth(User $user): int
+    {
+        $startDate = new \DateTime('first day of last month');
+        $endDate = new \DateTime('last day of last month');
+
+        return $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->join('m.produit', 'p')
+            ->where('p.userR = :user')
+            ->andWhere('m.date BETWEEN :start AND :end')
+            ->setParameter('user', $user)
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getLast30DaysStats(User $user): array
+    {
+        $startDate = new \DateTime('-29 days');
+        $endDate = new \DateTime();
+
+        // Solution alternative qui fonctionne avec PostgreSQL
+        $results = $this->createQueryBuilder('m')
+            ->select([
+                "m.date as full_date",
+                'm.type', 
+                'COUNT(m.id) as count'
+            ])
+            ->join('m.produit', 'p')
+            ->where('p.userR = :user')
+            ->andWhere('m.date BETWEEN :start AND :end')
+            ->setParameter('user', $user)
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->groupBy("m.date, m.type") // Group by direct sur le champ
+            ->getQuery()
+            ->getResult();
+
+        // Traitement des dates en PHP
+        $groupedResults = [];
+        foreach ($results as $result) {
+            $date = $result['full_date']->format('Y-m-d');
+            $type = $result['type'];
+            
+            if (!isset($groupedResults[$date][$type])) {
+                $groupedResults[$date][$type] = 0;
+            }
+            $groupedResults[$date][$type] += $result['count'];
+        }
+
+        return $this->formatStatsData($groupedResults);
+    }
+
+    private function formatStatsData(array $groupedResults): array
+    {
+        $formatted = ['entrees' => [], 'sorties' => []];
+        $dates = [];
+        
+        // Générer toutes les dates des 30 derniers jours
+        for ($i = 29; $i >= 0; $i--) {
+            $date = (new \DateTime("-$i days"))->format('Y-m-d');
+            $dates[] = $date;
+            $formatted['entrees'][$date] = $groupedResults[$date]['entree'] ?? 0;
+            $formatted['sorties'][$date] = $groupedResults[$date]['sortie'] ?? 0;
+        }
+
+        return [
+            'dates' => $dates,
+            'entrees' => array_values($formatted['entrees']),
+            'sorties' => array_values($formatted['sorties'])
+        ];
+    }       
     //    /**
     //     * @return MouvementProduit[] Returns an array of MouvementProduit objects
     //     */

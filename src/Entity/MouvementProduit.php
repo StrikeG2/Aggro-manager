@@ -25,7 +25,7 @@ class MouvementProduit
     private ?string $type = null;
 
     #[ORM\Column]
-    private ?\DateTime $date = null;
+    private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $prixUnitaire = null;
@@ -74,12 +74,12 @@ class MouvementProduit
         return $this;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDate(): ?\DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(\DateTimeImmutable $date): static
     {
         $this->date = $date;
 
